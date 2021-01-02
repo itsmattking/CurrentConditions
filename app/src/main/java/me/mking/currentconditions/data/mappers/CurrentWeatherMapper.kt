@@ -7,6 +7,9 @@ import javax.inject.Inject
 
 class CurrentWeatherMapper @Inject constructor() {
     fun mapTo(openWeatherApiResponse: OpenWeatherApiResponse): CurrentWeather {
+        if (openWeatherApiResponse.weather.isEmpty()) {
+            return CurrentWeather.Empty
+        }
         return CurrentWeather(
             location = openWeatherApiResponse.name,
             condition = openWeatherApiResponse.weather[0].description,

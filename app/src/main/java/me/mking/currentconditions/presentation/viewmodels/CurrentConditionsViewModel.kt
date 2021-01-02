@@ -14,6 +14,7 @@ import me.mking.currentconditions.domain.models.CurrentWeather
 import me.mking.currentconditions.domain.repositories.CurrentWeatherInput
 import me.mking.currentconditions.domain.usecases.DataResult
 import me.mking.currentconditions.domain.usecases.GetCachedCurrentWeatherUseCase
+import java.util.concurrent.TimeUnit
 
 class CurrentConditionsViewModel @ViewModelInject constructor(
     private val getCachedCurrentWeatherUseCase: GetCachedCurrentWeatherUseCase,
@@ -38,7 +39,8 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
             CurrentWeatherInput(
                 latitude = location.latitude,
                 longitude = location.longitude,
-                unitType = CurrentWeatherInput.UnitType.METRIC
+                unitType = CurrentWeatherInput.UnitType.METRIC,
+                maxAge = TimeUnit.DAYS.toSeconds(1)
             )
         )
         _state.value = when (result) {

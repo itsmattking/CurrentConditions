@@ -10,7 +10,8 @@ interface CurrentWeatherRepository {
 data class CurrentWeatherInput(
     val latitude: Double,
     val longitude: Double,
-    val unitType: UnitType
+    val unitType: UnitType,
+    val maxAge: Long = 0L
 ) {
     enum class UnitType(name: String) {
         METRIC("metric"),

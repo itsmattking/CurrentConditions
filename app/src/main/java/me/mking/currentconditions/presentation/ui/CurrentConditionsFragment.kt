@@ -1,6 +1,7 @@
 package me.mking.currentconditions.presentation.ui
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +22,7 @@ class CurrentConditionsFragment : Fragment() {
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            checkForLocationPermissions()
+            checkForLocationPermissions(userHasDenied = it)
         }
 
     companion object {
@@ -55,15 +56,33 @@ class CurrentConditionsFragment : Fragment() {
         }
     }
 
-    private fun checkForLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(
+    private fun checkForLocationPermissions(
+        userSawRationale: Boolean = false,
+        userHasDenied: Boolean = false
+    ) {
+        when {
+            userHasDenied || ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-        } else {
-            viewModel.load()
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                viewModel.load()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) && !userSawRationale -> {
+                AlertDialog.Builder(requireContext())
+                    .setCancelable(false)
+                    .setTitle(getString(R.string.location_permission_dialog_title))
+                    .setMessage(getString(R.string.location_permission_dialog_message))
+                    .setPositiveButton(
+                        getString(R.string.location_permission_dialog_continue)
+                    ) { _, _ -> checkForLocationPermissions(userSawRationale = true) }
+                    .setNegativeButton(
+                        getString(R.string.location_permission_dialog_cancel)
+                    ) { _, _ -> checkForLocationPermissions(userHasDenied = true) }
+                    .show()
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
         }
     }
 }
