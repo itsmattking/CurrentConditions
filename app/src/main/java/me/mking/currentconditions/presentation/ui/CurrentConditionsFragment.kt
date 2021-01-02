@@ -68,21 +68,25 @@ class CurrentConditionsFragment : Fragment() {
                 viewModel.load()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) && !userSawRationale -> {
-                AlertDialog.Builder(requireContext())
-                    .setCancelable(false)
-                    .setTitle(getString(R.string.location_permission_dialog_title))
-                    .setMessage(getString(R.string.location_permission_dialog_message))
-                    .setPositiveButton(
-                        getString(R.string.location_permission_dialog_continue)
-                    ) { _, _ -> checkForLocationPermissions(userSawRationale = true) }
-                    .setNegativeButton(
-                        getString(R.string.location_permission_dialog_cancel)
-                    ) { _, _ -> checkForLocationPermissions(userHasDenied = true) }
-                    .show()
+                showPermissionRationaleDialog()
             }
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
             }
         }
+    }
+
+    private fun showPermissionRationaleDialog() {
+        AlertDialog.Builder(requireContext())
+            .setCancelable(false)
+            .setTitle(getString(R.string.location_permission_dialog_title))
+            .setMessage(getString(R.string.location_permission_dialog_message))
+            .setPositiveButton(
+                getString(R.string.location_permission_dialog_continue)
+            ) { _, _ -> checkForLocationPermissions(userSawRationale = true) }
+            .setNegativeButton(
+                getString(R.string.location_permission_dialog_cancel)
+            ) { _, _ -> checkForLocationPermissions(userHasDenied = true) }
+            .show()
     }
 }
