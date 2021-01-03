@@ -28,11 +28,7 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
     @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     fun load() = viewModelScope.launch {
         _state.value = CurrentConditionsViewState.Loading
-        when (val location = currentLocationProvider.currentLocation()) {
-            is CurrentLocation.Available -> loadWeather(location)
-            CurrentLocation.NotAvailable -> _state.value =
-                CurrentConditionsViewState.LocationNotAvailable
-        }
+        loadLocationAndWeather()
     }
 
     fun reload() = viewModelScope.launch {
@@ -42,6 +38,10 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
             )
             else -> _state.value
         }
+        loadLocationAndWeather()
+    }
+
+    private suspend fun loadLocationAndWeather() {
         when (val location = currentLocationProvider.currentLocation()) {
             is CurrentLocation.Available -> loadWeather(location)
             CurrentLocation.NotAvailable -> _state.value =
