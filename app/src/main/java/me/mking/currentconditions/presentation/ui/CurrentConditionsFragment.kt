@@ -62,7 +62,7 @@ class CurrentConditionsFragment : Fragment() {
                 viewBinding.currentConditionsCardView.apply {
                     locationText = state.currentWeather.location
                     conditionText = state.currentWeather.condition
-                    temperatureText = state.currentWeather.temperature.toString()
+                    temperatureText = state.currentWeather.temperature
                     windSpeedText = state.currentWeather.windSpeed
                     windDirectionText = state.currentWeather.windDirection
                     iconSrc = state.currentWeather.iconUrl

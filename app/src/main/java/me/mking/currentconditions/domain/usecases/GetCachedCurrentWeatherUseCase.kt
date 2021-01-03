@@ -22,7 +22,7 @@ class GetCachedCurrentWeatherUseCase @Inject constructor(
             var localResult = CurrentWeather.Empty
             try {
                 localResult = localCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
-                if (dateTimeProvider.nowInEpochSeconds() - localResult.updated > currentWeatherInput.maxAge) {
+                if (resultExceedsMaxAge(localResult, currentWeatherInput)) {
                     emit(DataResult.Partial(localResult))
                     val remoteResult =
                         remoteCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
@@ -41,5 +41,10 @@ class GetCachedCurrentWeatherUseCase @Inject constructor(
             emit(DataResult.Error("Some problem occurred"))
         }
     }
+
+    private fun resultExceedsMaxAge(
+        localResult: CurrentWeather,
+        currentWeatherInput: CurrentWeatherInput
+    ) = dateTimeProvider.nowInEpochSeconds() - localResult.updated > currentWeatherInput.maxAge
 }
 
