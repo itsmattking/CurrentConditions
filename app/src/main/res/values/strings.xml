@@ -7,4 +7,8 @@
     <string name="current_conditions_refresh">Refresh</string>
     <string name="current_conditions_error_generic">Something has gone wrong, try again later.</string>
     <string name="current_conditions_error_location">Your location was not found. Check that you have given location permissions to the app and try again.</string>
+    <string name="current_conditions_card_condition_label">Current condition:</string>
+    <string name="current_conditions_card_temp_label">Temperature:</string>
+    <string name="current_conditions_card_wind_speed_label">Wind speed:</string>
+    <string name="current_conditions_card_wind_direction_label">Wind direction:</string>
 </resources>

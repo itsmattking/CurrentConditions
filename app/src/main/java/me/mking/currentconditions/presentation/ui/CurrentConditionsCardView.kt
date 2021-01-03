@@ -16,6 +16,12 @@ class CurrentConditionsCardView @JvmOverloads constructor(
     private var viewBinding: CurrentConditionsCardViewBinding =
         CurrentConditionsCardViewBinding.inflate(LayoutInflater.from(context), this)
 
+    var locationText: CharSequence
+        get() = viewBinding.currentConditionsCardViewLocation.text
+        set(value) {
+            viewBinding.currentConditionsCardViewLocation.text = value
+        }
+
     var conditionText: CharSequence
         get() = viewBinding.currentConditionsCardViewCondition.text
         set(value) {
@@ -38,6 +44,12 @@ class CurrentConditionsCardView @JvmOverloads constructor(
         get() = viewBinding.currentConditionsCardViewWindDirection.text
         set(value) {
             viewBinding.currentConditionsCardViewWindDirection.text = value
+        }
+
+    var lastUpdatedText: CharSequence
+        get() = viewBinding.currentConditionsCardViewLastUpdated.text
+        set(value) {
+            viewBinding.currentConditionsCardViewLastUpdated.text = value
         }
 
     var iconSrc

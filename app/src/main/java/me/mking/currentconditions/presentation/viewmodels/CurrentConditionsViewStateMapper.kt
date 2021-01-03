@@ -2,6 +2,7 @@ package me.mking.currentconditions.presentation.viewmodels
 
 import me.mking.currentconditions.domain.models.CurrentWeather
 import me.mking.currentconditions.domain.usecases.DataResult
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.floor
@@ -36,6 +37,7 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
 
     private fun mapCurrentWeather(currentWeather: CurrentWeather): CurrentWeatherViewState {
         return CurrentWeatherViewState(
+            location = currentWeather.location,
             condition = currentWeather.condition.capitalize(Locale.UK),
             temperature = String.format("%s\u00B0c", currentWeather.temperature.roundToInt()),
             windSpeed = String.format(
@@ -43,7 +45,14 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
                 floor(currentWeather.windSpeed * METERS_TO_MPH_MULTIPLIER).toInt()
             ),
             windDirection = mapToWindDirection(currentWeather.windDirection),
-            iconUrl = currentWeather.iconUrl
+            iconUrl = currentWeather.iconUrl,
+            lastUpdated = String.format(
+                "Last updated %s",
+                SimpleDateFormat(
+                    "d MMMM yyyy h:mm a",
+                    Locale.UK
+                ).format(currentWeather.updated * 1000)
+            )
         )
     }
 

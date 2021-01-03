@@ -12,9 +12,11 @@ sealed class CurrentConditionsViewState {
 }
 
 data class CurrentWeatherViewState(
+    val location: String,
     val temperature: String,
     val condition: String,
     val windSpeed: String,
     val windDirection: String,
-    val iconUrl: String
+    val iconUrl: String,
+    val lastUpdated: String
 )

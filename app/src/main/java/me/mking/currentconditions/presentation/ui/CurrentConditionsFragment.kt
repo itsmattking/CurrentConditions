@@ -60,11 +60,13 @@ class CurrentConditionsFragment : Fragment() {
         when (state) {
             is CurrentConditionsViewState.Ready -> {
                 viewBinding.currentConditionsCardView.apply {
+                    locationText = state.currentWeather.location
                     conditionText = state.currentWeather.condition
                     temperatureText = state.currentWeather.temperature.toString()
                     windSpeedText = state.currentWeather.windSpeed
                     windDirectionText = state.currentWeather.windDirection
                     iconSrc = state.currentWeather.iconUrl
+                    lastUpdatedText = state.currentWeather.lastUpdated
                 }
                 viewBinding.currentConditionsProgress.isVisible = state.isRefreshing
             }
