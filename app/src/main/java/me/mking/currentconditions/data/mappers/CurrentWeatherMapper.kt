@@ -2,10 +2,13 @@ package me.mking.currentconditions.data.mappers
 
 import me.mking.currentconditions.data.models.CurrentWeatherEntity
 import me.mking.currentconditions.data.models.OpenWeatherApiResponse
+import me.mking.currentconditions.data.providers.DateTimeProvider
 import me.mking.currentconditions.domain.models.CurrentWeather
 import javax.inject.Inject
 
-class CurrentWeatherMapper @Inject constructor() {
+class CurrentWeatherMapper @Inject constructor(
+    private val dateTimeProvider: DateTimeProvider
+) {
     fun mapTo(openWeatherApiResponse: OpenWeatherApiResponse): CurrentWeather {
         if (openWeatherApiResponse.weather.isEmpty()) {
             return CurrentWeather.Empty
@@ -17,7 +20,7 @@ class CurrentWeatherMapper @Inject constructor() {
             windSpeed = openWeatherApiResponse.wind.speed,
             windDirection = openWeatherApiResponse.wind.deg.toDouble(),
             temperature = openWeatherApiResponse.main.temp,
-            updated = openWeatherApiResponse.dt
+            updated = dateTimeProvider.nowInEpochSeconds()
         )
     }
 
