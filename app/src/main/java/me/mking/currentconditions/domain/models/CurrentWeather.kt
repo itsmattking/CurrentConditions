@@ -4,8 +4,8 @@ data class CurrentWeather(
     val location: String,
     val condition: String,
     val temperature: Double,
-    val windSpeed: String,
-    val windDirection: String,
+    val windSpeed: Double,
+    val windDirection: Double,
     val iconUrl: String,
     val updated: Long
 ) {
@@ -14,8 +14,8 @@ data class CurrentWeather(
             location = "Unknown",
             condition = "Unknown",
             temperature = 0.0,
-            windSpeed = "Unknown",
-            windDirection = "Unknown",
+            windSpeed = 0.0,
+            windDirection = 0.0,
             iconUrl = "Unknown",
             updated = 0L
         )

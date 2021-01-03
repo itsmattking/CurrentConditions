@@ -10,8 +10,8 @@ data class CurrentWeatherEntity(
     val location: String,
     val condition: String,
     val temperature: Double,
-    val windSpeed: String,
-    val windDirection: String,
+    val windSpeed: Double,
+    val windDirection: Double,
     val iconUrl: String,
     val updated: Long
 )

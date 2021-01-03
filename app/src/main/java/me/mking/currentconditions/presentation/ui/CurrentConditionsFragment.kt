@@ -53,9 +53,11 @@ class CurrentConditionsFragment : Fragment() {
     }
 
     private fun handleState(state: CurrentConditionsViewState) {
+        viewBinding.currentConditionsProgress.isVisible =
+            state is CurrentConditionsViewState.Loading
+        viewBinding.currentConditionsErrorMessage.isVisible =
+            (state is CurrentConditionsViewState.Error || state is CurrentConditionsViewState.LocationNotAvailable)
         when (state) {
-            CurrentConditionsViewState.Loading -> viewBinding.currentConditionsProgress.isVisible =
-                true
             is CurrentConditionsViewState.Ready -> {
                 viewBinding.currentConditionsCardView.apply {
                     conditionText = state.currentWeather.condition
@@ -66,8 +68,15 @@ class CurrentConditionsFragment : Fragment() {
                 }
                 viewBinding.currentConditionsProgress.isVisible = state.isRefreshing
             }
-            CurrentConditionsViewState.Error -> Unit
-            CurrentConditionsViewState.LocationNotAvailable -> Unit
+            CurrentConditionsViewState.Error -> {
+                viewBinding.currentConditionsErrorMessage.text =
+                    resources.getString(R.string.current_conditions_error_generic)
+            }
+            CurrentConditionsViewState.LocationNotAvailable -> {
+                viewBinding.currentConditionsErrorMessage.text =
+                    resources.getString(R.string.current_conditions_error_location)
+            }
+            else -> Unit
         }
     }
 

@@ -10,7 +10,7 @@
         android:id="@+id/current_conditions_card_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,6 +25,20 @@
         app:layout_constraintEnd_toEndOf="@id/current_conditions_card_view"
         app:layout_constraintStart_toStartOf="@id/current_conditions_card_view"
         app:layout_constraintTop_toTopOf="@id/current_conditions_card_view" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:id="@+id/current_conditions_error_message"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="An error has occurred"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         app:layout_constraintBottom_toBottomOf="parent"

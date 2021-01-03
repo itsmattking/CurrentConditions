@@ -1,6 +1,7 @@
 package me.mking.currentconditions.domain.usecases
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import me.mking.currentconditions.data.providers.DateTimeProvider
 import me.mking.currentconditions.data.repositories.LocalCurrentWeatherRepository
@@ -34,6 +35,8 @@ class GetCachedCurrentWeatherUseCase @Inject constructor(
                     else -> emit(DataResult.Error<CurrentWeather>("Unable to fetch weather"))
                 }
             }
+        }.catch {
+            emit(DataResult.Error("Some problem occurred"))
         }
     }
 }

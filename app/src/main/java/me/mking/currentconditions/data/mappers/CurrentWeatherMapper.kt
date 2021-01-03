@@ -14,8 +14,8 @@ class CurrentWeatherMapper @Inject constructor() {
             location = openWeatherApiResponse.name,
             condition = openWeatherApiResponse.weather[0].description,
             iconUrl = "https://openweathermap.org/img/w/${openWeatherApiResponse.weather[0].icon}.png",
-            windSpeed = openWeatherApiResponse.wind.speed.toString(),
-            windDirection = openWeatherApiResponse.wind.deg.toString(),
+            windSpeed = openWeatherApiResponse.wind.speed,
+            windDirection = openWeatherApiResponse.wind.deg.toDouble(),
             temperature = openWeatherApiResponse.main.temp,
             updated = openWeatherApiResponse.dt
         )
