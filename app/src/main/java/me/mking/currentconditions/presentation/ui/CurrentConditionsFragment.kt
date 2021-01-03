@@ -4,16 +4,17 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import me.mking.currentconditions.R
+import me.mking.currentconditions.databinding.CurrentConditionsFragmentBinding
 import me.mking.currentconditions.presentation.viewmodels.CurrentConditionsViewModel
 import me.mking.currentconditions.presentation.viewmodels.CurrentConditionsViewState
 
@@ -31,12 +32,14 @@ class CurrentConditionsFragment : Fragment() {
 
     private val viewModel: CurrentConditionsViewModel by viewModels()
 
+    lateinit var viewBinding: CurrentConditionsFragmentBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.current_conditions_fragment, container, false)
-    }
+    ) = CurrentConditionsFragmentBinding.inflate(inflater).apply {
+        viewBinding = this
+    }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,11 +49,18 @@ class CurrentConditionsFragment : Fragment() {
 
     private fun handleState(state: CurrentConditionsViewState) {
         when (state) {
-            CurrentConditionsViewState.Loading -> Unit
-            is CurrentConditionsViewState.Ready -> Log.d(
-                "CurrentConditions",
-                state.currentWeather.condition
-            )
+            CurrentConditionsViewState.Loading -> viewBinding.currentConditionsProgress.isVisible =
+                true
+            is CurrentConditionsViewState.Ready -> {
+                viewBinding.currentConditionsCardView.apply {
+                    conditionText = state.currentWeather.condition
+                    temperatureText = state.currentWeather.temperature.toString()
+                    windSpeedText = state.currentWeather.windSpeed
+                    windDirectionText = state.currentWeather.windDirection
+                    iconSrc = state.currentWeather.iconUrl
+                }
+                viewBinding.currentConditionsProgress.isVisible = false
+            }
             CurrentConditionsViewState.Error -> Unit
             CurrentConditionsViewState.LocationNotAvailable -> Unit
         }

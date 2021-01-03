@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.cardview.widget.CardView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp">
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_condition_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Current Condition:"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_condition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_icon"
+            app:layout_constraintStart_toEndOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Windy" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_temp_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Temperature:"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_condition_label" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_temp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_icon"
+            app:layout_constraintStart_toEndOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_condition"
+            tools:text="8C" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_wind_speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Wind Speed:"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_temp_label" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_wind_speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_temp"
+            tools:text="20mph" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_wind_direction_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Wind Direction:"
+            app:layout_constraintEnd_toStartOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_wind_speed_label" />
+
+        <TextView
+            android:id="@+id/current_conditions_card_view_wind_direction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/current_conditions_card_view_guideline"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_card_view_wind_speed"
+            tools:text="North East" />
+
+        <ImageView
+            android:id="@+id/current_conditions_card_view_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/current_condition_icon_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@android:drawable/ic_menu_report_image" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/current_conditions_card_view_guideline"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".45" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

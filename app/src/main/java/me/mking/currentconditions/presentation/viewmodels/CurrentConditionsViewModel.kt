@@ -40,7 +40,7 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
                 latitude = location.latitude,
                 longitude = location.longitude,
                 unitType = CurrentWeatherInput.UnitType.METRIC,
-                maxAge = TimeUnit.DAYS.toSeconds(1)
+                maxAge = TimeUnit.MINUTES.toSeconds(1)
             )
         )
         _state.value = when (result) {
