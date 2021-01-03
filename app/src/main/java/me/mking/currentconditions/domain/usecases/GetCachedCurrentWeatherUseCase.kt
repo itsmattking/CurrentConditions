@@ -22,12 +22,14 @@ class GetCachedCurrentWeatherUseCase @Inject constructor(
             var localResult = CurrentWeather.Empty
             try {
                 localResult = localCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
-                emit(DataResult.Success(localResult))
                 if (dateTimeProvider.nowInEpochSeconds() - localResult.updated > currentWeatherInput.maxAge) {
+                    emit(DataResult.Partial(localResult))
                     val remoteResult =
                         remoteCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
                     localCurrentWeatherRepository.insertCurrentWeather(remoteResult)
                     emit(DataResult.Success(remoteResult))
+                } else {
+                    emit(DataResult.Success(localResult))
                 }
             } catch (exception: Exception) {
                 when (exception) {

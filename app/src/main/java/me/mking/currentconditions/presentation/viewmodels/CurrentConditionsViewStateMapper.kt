@@ -27,6 +27,10 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
         return when (result) {
             is DataResult.Error -> CurrentConditionsViewState.Error
             is DataResult.Success -> CurrentConditionsViewState.Ready(mapCurrentWeather(result.data))
+            is DataResult.Partial -> CurrentConditionsViewState.Ready(
+                mapCurrentWeather(result.data),
+                isRefreshing = true
+            )
         }
     }
 
