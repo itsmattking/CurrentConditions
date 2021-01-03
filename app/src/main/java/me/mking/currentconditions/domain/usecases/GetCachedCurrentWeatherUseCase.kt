@@ -1,5 +1,7 @@
 package me.mking.currentconditions.domain.usecases
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import me.mking.currentconditions.data.providers.DateTimeProvider
 import me.mking.currentconditions.data.repositories.LocalCurrentWeatherRepository
 import me.mking.currentconditions.data.repositories.RemoteCurrentWeatherRepository
@@ -13,21 +15,24 @@ class GetCachedCurrentWeatherUseCase @Inject constructor(
     private val remoteCurrentWeatherRepository: RemoteCurrentWeatherRepository,
     private val dateTimeProvider: DateTimeProvider
 ) {
-    suspend fun execute(currentWeatherInput: CurrentWeatherInput): DataResult<CurrentWeather> {
-        var localResult: CurrentWeather = CurrentWeather.Empty
-        return try {
-            localResult = localCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
-            if (dateTimeProvider.nowInEpochSeconds() - localResult.updated > currentWeatherInput.maxAge) {
-                val remoteResult =
-                    remoteCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
-                localCurrentWeatherRepository.insertCurrentWeather(remoteResult)
-                localResult = remoteResult
-            }
-            DataResult.Success(localResult)
-        } catch (exception: Exception) {
-            when (exception) {
-                is RemoteRepositoryException -> DataResult.Success(localResult)
-                else -> DataResult.Error("Unable to fetch weather")
+
+    fun executeFlow(currentWeatherInput: CurrentWeatherInput): Flow<DataResult<CurrentWeather>> {
+        return flow {
+            var localResult = CurrentWeather.Empty
+            try {
+                localResult = localCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
+                emit(DataResult.Success(localResult))
+                if (dateTimeProvider.nowInEpochSeconds() - localResult.updated > currentWeatherInput.maxAge) {
+                    val remoteResult =
+                        remoteCurrentWeatherRepository.getCurrentWeather(currentWeatherInput)
+                    localCurrentWeatherRepository.insertCurrentWeather(remoteResult)
+                    emit(DataResult.Success(remoteResult))
+                }
+            } catch (exception: Exception) {
+                when (exception) {
+                    is RemoteRepositoryException -> emit(DataResult.Success(localResult))
+                    else -> emit(DataResult.Error<CurrentWeather>("Unable to fetch weather"))
+                }
             }
         }
     }

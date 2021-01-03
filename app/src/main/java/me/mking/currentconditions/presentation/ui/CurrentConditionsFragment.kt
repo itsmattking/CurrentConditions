@@ -44,6 +44,11 @@ class CurrentConditionsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.state.observe(viewLifecycleOwner) { handleState(it) }
+        viewBinding.currentConditionsReload.setOnClickListener { viewModel.reload() }
+    }
+
+    override fun onResume() {
+        super.onResume()
         checkForLocationPermissions()
     }
 
@@ -59,7 +64,7 @@ class CurrentConditionsFragment : Fragment() {
                     windDirectionText = state.currentWeather.windDirection
                     iconSrc = state.currentWeather.iconUrl
                 }
-                viewBinding.currentConditionsProgress.isVisible = false
+                viewBinding.currentConditionsProgress.isVisible = state.isRefreshing
             }
             CurrentConditionsViewState.Error -> Unit
             CurrentConditionsViewState.LocationNotAvailable -> Unit

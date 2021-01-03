@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import me.mking.currentconditions.data.providers.CurrentLocation
 import me.mking.currentconditions.data.providers.CurrentLocationProvider
@@ -34,25 +35,40 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
         }
     }
 
+    fun reload() = viewModelScope.launch {
+        _state.value = when(val currentState = _state.value) {
+            is CurrentConditionsViewState.Ready -> currentState.copy(
+                isRefreshing = true
+            )
+            else -> _state.value
+        }
+        when (val location = currentLocationProvider.currentLocation()) {
+            is CurrentLocation.Available -> loadWeather(location)
+            CurrentLocation.NotAvailable -> _state.value =
+                CurrentConditionsViewState.LocationNotAvailable
+        }
+    }
+
     private suspend fun loadWeather(location: CurrentLocation.Available) {
-        val result = getCachedCurrentWeatherUseCase.execute(
+        getCachedCurrentWeatherUseCase.executeFlow(
             CurrentWeatherInput(
                 latitude = location.latitude,
                 longitude = location.longitude,
                 unitType = CurrentWeatherInput.UnitType.METRIC,
                 maxAge = TimeUnit.MINUTES.toSeconds(1)
             )
-        )
-        _state.value = when (result) {
-            is DataResult.Error -> CurrentConditionsViewState.Error
-            is DataResult.Success -> CurrentConditionsViewState.Ready(result.data)
+        ).collect {
+            _state.value = when (it) {
+                is DataResult.Error -> CurrentConditionsViewState.Error
+                is DataResult.Success -> CurrentConditionsViewState.Ready(it.data)
+            }
         }
     }
 }
 
 sealed class CurrentConditionsViewState {
     object Loading : CurrentConditionsViewState()
-    data class Ready(val currentWeather: CurrentWeather) : CurrentConditionsViewState()
+    data class Ready(val currentWeather: CurrentWeather, val isRefreshing: Boolean = false) : CurrentConditionsViewState()
     object Error : CurrentConditionsViewState()
     object LocationNotAvailable : CurrentConditionsViewState()
 }

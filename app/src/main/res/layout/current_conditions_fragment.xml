@@ -26,5 +26,16 @@
         app:layout_constraintStart_toStartOf="@id/current_conditions_card_view"
         app:layout_constraintTop_toTopOf="@id/current_conditions_card_view" />
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/current_conditions_reload"
+        android:src="@drawable/ic_refresh_24px"
+        app:tint="@color/white"
+        android:contentDescription="@string/current_conditions_refresh"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
