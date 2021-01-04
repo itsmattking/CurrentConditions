@@ -19,7 +19,7 @@ class LocalCurrentWeatherRepositoryTest {
             latitude = 51.5,
             longitude = 0.1,
             unitType = CurrentWeatherInput.UnitType.METRIC,
-            maxAge = 0L
+            maxAge = 60L
         )
     }
 
@@ -56,7 +56,7 @@ class LocalCurrentWeatherRepositoryTest {
         coEvery { mockCurrentWeatherDao.getCurrentWeather() } returns emptyList()
         val result = subject.getCurrentWeather(SOME_CURRENT_WEATHER_INPUT)
         coVerify { mockCurrentWeatherDao.getCurrentWeather() }
-        verify { mockCurrentWeatherMapper.mapTo(TestData.SOME_CURRENT_WEATHER_ENTITY) wasNot Called }
+        verify(exactly = 0) { mockCurrentWeatherMapper.mapTo(TestData.SOME_CURRENT_WEATHER_ENTITY) }
         Truth.assertThat(result).isInstanceOf(CurrentWeather.Empty::class.java)
     }
 
