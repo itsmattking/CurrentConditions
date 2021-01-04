@@ -9,7 +9,7 @@ object TestData {
         set(Calendar.MONTH, Calendar.JANUARY)
         set(Calendar.DAY_OF_MONTH, 4)
         set(Calendar.YEAR, 2021)
-        set(Calendar.HOUR, 10)
+        set(Calendar.HOUR_OF_DAY, 10)
         set(Calendar.MINUTE, 21)
         set(Calendar.SECOND, 7)
     }.timeInMillis / 1000 // 1609755667
@@ -45,18 +45,11 @@ object TestData {
     )
     val SOME_CURRENT_WEATHER = CurrentWeather(
         location = "London",
-        condition = "Cloudy",
+        condition = "cloudy",
         temperature = 4.5,
         windSpeed = 2.3,
         windDirection = 12.4,
         iconUrl = "https://openweathermap.org/img/w/01n.png",
-        updated = Calendar.getInstance().apply {
-            set(Calendar.MONTH, Calendar.JANUARY)
-            set(Calendar.DAY_OF_MONTH, 4)
-            set(Calendar.YEAR, 2021)
-            set(Calendar.HOUR, 10)
-            set(Calendar.MINUTE, 21)
-            set(Calendar.SECOND, 7)
-        }.timeInMillis / 1000 // 1609755667
+        updated = SOME_NOW_IN_EPOCH_SECONDS
     )
 }
