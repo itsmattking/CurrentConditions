@@ -15,8 +15,11 @@ class FusedCurrentLocationProvider @Inject constructor(
 
     @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     override suspend fun currentLocation(): CurrentLocation = suspendCoroutine { task ->
-        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener {
-            task.resume(CurrentLocation.Available(it.latitude, it.longitude))
+        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location ->
+            task.resume(
+                location?.let { CurrentLocation.Available(it.latitude, it.longitude) }
+                ?: CurrentLocation.NotAvailable
+            )
         }.addOnFailureListener {
             task.resume(CurrentLocation.NotAvailable)
         }.addOnCanceledListener {

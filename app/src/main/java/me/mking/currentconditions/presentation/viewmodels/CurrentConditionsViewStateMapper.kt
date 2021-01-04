@@ -12,6 +12,7 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
 
     private companion object {
         const val METERS_TO_MPH_MULTIPLIER = 2.237
+        const val LAST_UPDATED_DATE_FORMAT = "d MMMM yyyy h:mm a"
         val DIRECTIONS = arrayOf(
             "North",
             "North East",
@@ -49,7 +50,7 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
             lastUpdated = String.format(
                 "Last updated %s",
                 SimpleDateFormat(
-                    "d MMMM yyyy h:mm a",
+                    LAST_UPDATED_DATE_FORMAT,
                     Locale.UK
                 ).format(currentWeather.updated * 1000)
             )

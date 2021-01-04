@@ -93,7 +93,7 @@ class CurrentConditionsFragment : Fragment() {
             ) == PackageManager.PERMISSION_GRANTED -> {
                 viewModel.load()
             }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) && !userSawRationale -> {
+            !userSawRationale && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
                 showPermissionRationaleDialog()
             }
             else -> {

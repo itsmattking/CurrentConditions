@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import me.mking.currentconditions.data.providers.CurrentLocation
 import me.mking.currentconditions.data.providers.CurrentLocationProvider
 import me.mking.currentconditions.domain.repositories.CurrentWeatherInput
-import me.mking.currentconditions.domain.usecases.DataResult
 import me.mking.currentconditions.domain.usecases.GetCachedCurrentWeatherUseCase
 import java.util.concurrent.TimeUnit
 
@@ -32,7 +31,7 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
     }
 
     fun reload() = viewModelScope.launch {
-        _state.value = when(val currentState = _state.value) {
+        _state.value = when (val currentState = _state.value) {
             is CurrentConditionsViewState.Ready -> currentState.copy(
                 isRefreshing = true
             )
