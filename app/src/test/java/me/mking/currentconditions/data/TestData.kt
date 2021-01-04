@@ -1,4 +1,4 @@
-package me.mking.currentconditions.data.mappers
+package me.mking.currentconditions.data
 
 import me.mking.currentconditions.data.models.*
 import me.mking.currentconditions.domain.models.CurrentWeather

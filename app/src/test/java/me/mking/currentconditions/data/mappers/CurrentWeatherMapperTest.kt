@@ -3,6 +3,7 @@ package me.mking.currentconditions.data.mappers
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
+import me.mking.currentconditions.data.TestData
 import me.mking.currentconditions.data.providers.DateTimeProvider
 import me.mking.currentconditions.domain.models.CurrentWeather
 import org.junit.Test

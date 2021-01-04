@@ -3,8 +3,8 @@ package me.mking.currentconditions.data.repositories
 import com.google.common.truth.Truth
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import me.mking.currentconditions.data.TestData
 import me.mking.currentconditions.data.mappers.CurrentWeatherMapper
-import me.mking.currentconditions.data.mappers.TestData
 import me.mking.currentconditions.data.services.OpenWeatherApiService
 import me.mking.currentconditions.domain.repositories.CurrentWeatherInput
 import okio.IOException
@@ -68,7 +68,7 @@ class RemoteCurrentWeatherRepositoryTest {
                     any(),
                     any()
                 )
-            } throws IOException("IO Error")
+            } throws IOException()
             var thrownException: Exception? = null
             try {
                 subject.getCurrentWeather(SOME_CURRENT_WEATHER_INPUT)
