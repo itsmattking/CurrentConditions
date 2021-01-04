@@ -6,7 +6,6 @@ import me.mking.currentconditions.domain.models.CurrentWeather
 import me.mking.currentconditions.domain.repositories.CurrentWeatherInput
 import me.mking.currentconditions.domain.repositories.CurrentWeatherRepository
 import okio.IOException
-import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -21,7 +20,7 @@ class RemoteCurrentWeatherRepository @Inject constructor(
                 lat = currentWeatherInput.latitude,
                 lon = currentWeatherInput.longitude,
                 appId = openWeatherAppId,
-                units = currentWeatherInput.unitType.name
+                units = currentWeatherInput.unitType.unitName
             )
             return currentWeatherMapper.mapTo(result)
         } catch (exception: Exception) {

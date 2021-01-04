@@ -13,7 +13,7 @@ data class CurrentWeatherInput(
     val unitType: UnitType,
     val maxAge: Long = 0L
 ) {
-    enum class UnitType(name: String) {
+    enum class UnitType(val unitName: String) {
         METRIC("metric"),
         IMPERIAL("imperial")
     }
