@@ -37,24 +37,27 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
             )
             else -> _state.value
         }
-        loadLocationAndWeather()
+        loadLocationAndWeather(forceRefresh = true)
     }
 
-    private suspend fun loadLocationAndWeather() {
+    private suspend fun loadLocationAndWeather(forceRefresh: Boolean = false) {
         when (val location = currentLocationProvider.currentLocation()) {
-            is CurrentLocation.Available -> loadWeather(location)
+            is CurrentLocation.Available -> loadWeather(location, forceRefresh)
             CurrentLocation.NotAvailable -> _state.value =
                 CurrentConditionsViewState.LocationNotAvailable
         }
     }
 
-    private suspend fun loadWeather(location: CurrentLocation.Available) {
+    private suspend fun loadWeather(
+        location: CurrentLocation.Available,
+        forceRefresh: Boolean = false
+    ) {
         getCachedCurrentWeatherUseCase.executeFlow(
             CurrentWeatherInput(
                 latitude = location.latitude,
                 longitude = location.longitude,
                 unitType = CurrentWeatherInput.UnitType.METRIC,
-                maxAge = TimeUnit.MINUTES.toSeconds(1)
+                maxAge = if (forceRefresh) 0L else TimeUnit.DAYS.toSeconds(1)
             )
         ).collect {
             _state.value = currentConditionsViewStateMapper.mapTo(it)

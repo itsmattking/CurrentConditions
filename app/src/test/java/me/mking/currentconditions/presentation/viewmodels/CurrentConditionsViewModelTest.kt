@@ -3,10 +3,7 @@ package me.mking.currentconditions.presentation.viewmodels
 import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verifyOrder
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -50,16 +47,29 @@ class CurrentConditionsViewModelTest {
     }
 
     @Test
-    fun givenSubjectAndLocationIsNotAvailable_whenLoad_thenStateIsLocationNotAvailable() = runBlockingTest {
-        val subject = givenSubjectAndLocationIsNotAvailable()
+    fun givenSubjectAndStateIsReady_whenReload_thenMaxAgeArgumentIsSet() = runBlockingTest {
+        val subject = givenSubject()
         subject.load()
-        verifyOrder {
-            stateObserver.onChanged(CurrentConditionsViewState.Loading)
-            stateObserver.onChanged(withArg {
-                Truth.assertThat(it).isInstanceOf(CurrentConditionsViewState.LocationNotAvailable::class.java)
+        coVerify {
+            mockGetCachedCurrentWeatherUseCase.executeFlow(withArg {
+                Truth.assertThat(it.maxAge).isGreaterThan(0L)
             })
         }
     }
+
+    @Test
+    fun givenSubjectAndLocationIsNotAvailable_whenLoad_thenStateIsLocationNotAvailable() =
+        runBlockingTest {
+            val subject = givenSubjectAndLocationIsNotAvailable()
+            subject.load()
+            verifyOrder {
+                stateObserver.onChanged(CurrentConditionsViewState.Loading)
+                stateObserver.onChanged(withArg {
+                    Truth.assertThat(it)
+                        .isInstanceOf(CurrentConditionsViewState.LocationNotAvailable::class.java)
+                })
+            }
+        }
 
     @Test
     fun givenSubjectAndStateIsReady_whenReload_thenStateIsReadyIsRefreshing() = runBlockingTest {
@@ -73,6 +83,17 @@ class CurrentConditionsViewModelTest {
             stateObserver.onChanged(withArg {
                 Truth.assertThat(it).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
                 Truth.assertThat((it as CurrentConditionsViewState.Ready).isRefreshing).isFalse()
+            })
+        }
+    }
+
+    @Test
+    fun givenSubjectAndStateIsReady_whenReload_thenMaxAgeArgumentIsZero() = runBlockingTest {
+        val subject = givenSubjectStateIsReady()
+        subject.reload()
+        coVerify {
+            mockGetCachedCurrentWeatherUseCase.executeFlow(withArg {
+                Truth.assertThat(it.maxAge).isEqualTo(0L)
             })
         }
     }
