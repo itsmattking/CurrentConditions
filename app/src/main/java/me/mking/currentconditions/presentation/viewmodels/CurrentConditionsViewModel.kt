@@ -24,6 +24,8 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
     private val _state: MutableLiveData<CurrentConditionsViewState> = MutableLiveData()
     val state: LiveData<CurrentConditionsViewState> = _state
 
+    private var isConnected: Boolean = true
+
     @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     fun load() = viewModelScope.launch {
         _state.value = CurrentConditionsViewState.Loading
@@ -38,6 +40,14 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
             else -> _state.value
         }
         loadLocationAndWeather(forceRefresh = true)
+    }
+
+    fun onConnectionAvailable() {
+        isConnected = true
+    }
+
+    fun onConnectionUnavailable() {
+        isConnected = false
     }
 
     private suspend fun loadLocationAndWeather(forceRefresh: Boolean = false) {
@@ -60,7 +70,7 @@ class CurrentConditionsViewModel @ViewModelInject constructor(
                 maxAge = if (forceRefresh) 0L else TimeUnit.DAYS.toSeconds(1)
             )
         ).collect {
-            _state.value = currentConditionsViewStateMapper.mapTo(it)
+            _state.value = currentConditionsViewStateMapper.mapTo(it, isOffline = !isConnected)
         }
     }
 }

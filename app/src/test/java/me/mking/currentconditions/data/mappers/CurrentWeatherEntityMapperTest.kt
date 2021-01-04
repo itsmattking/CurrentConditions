@@ -19,7 +19,7 @@ class CurrentWeatherEntityMapperTest {
                 set(Calendar.MONTH, Calendar.JANUARY)
                 set(Calendar.DAY_OF_MONTH, 4)
                 set(Calendar.YEAR, 2021)
-                set(Calendar.HOUR, 10)
+                set(Calendar.HOUR_OF_DAY, 10)
                 set(Calendar.MINUTE, 21)
                 set(Calendar.SECOND, 7)
             }.timeInMillis / 1000 // 1609755667

@@ -37,6 +37,7 @@ class CurrentConditionsViewStateMapperTest {
         Truth.assertThat(result).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
 
         with((result as CurrentConditionsViewState.Ready)) {
+            Truth.assertThat(isOffline).isFalse()
             Truth.assertThat(isRefreshing).isFalse()
             Truth.assertThat(currentWeather.location).isEqualTo("London")
             Truth.assertThat(currentWeather.condition).isEqualTo("Cloudy")
@@ -48,5 +49,19 @@ class CurrentConditionsViewStateMapperTest {
         }
     }
 
+    @Test
+    fun givenSubject_whenMapToWithSuccessAndOfflineTrue_thenResultIsReadyWithOfflineTrue() {
+        val result = subject.mapTo(
+            DataResult.Success(
+                TestData.SOME_CURRENT_WEATHER
+            ),
+            isOffline = true
+        )
+        Truth.assertThat(result).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
+
+        with((result as CurrentConditionsViewState.Ready)) {
+            Truth.assertThat(isOffline).isTrue()
+        }
+    }
 
 }

@@ -4,7 +4,8 @@ sealed class CurrentConditionsViewState {
     object Loading : CurrentConditionsViewState()
     data class Ready(
         val currentWeather: CurrentWeatherViewState,
-        val isRefreshing: Boolean = false
+        val isRefreshing: Boolean = false,
+        val isOffline: Boolean = false
     ) : CurrentConditionsViewState()
 
     object Error : CurrentConditionsViewState()

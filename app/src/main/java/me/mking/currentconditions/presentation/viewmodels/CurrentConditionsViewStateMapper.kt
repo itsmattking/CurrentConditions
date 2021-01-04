@@ -25,12 +25,15 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
         )
     }
 
-    fun mapTo(result: DataResult<CurrentWeather>): CurrentConditionsViewState {
+    fun mapTo(result: DataResult<CurrentWeather>, isOffline: Boolean = false): CurrentConditionsViewState {
         return when (result) {
             is DataResult.Error -> CurrentConditionsViewState.Error
-            is DataResult.Success -> CurrentConditionsViewState.Ready(mapCurrentWeather(result.data))
+            is DataResult.Success -> CurrentConditionsViewState.Ready(
+                currentWeather = mapCurrentWeather(result.data),
+                isOffline = isOffline
+            )
             is DataResult.Partial -> CurrentConditionsViewState.Ready(
-                mapCurrentWeather(result.data),
+                currentWeather = mapCurrentWeather(result.data),
                 isRefreshing = true
             )
         }

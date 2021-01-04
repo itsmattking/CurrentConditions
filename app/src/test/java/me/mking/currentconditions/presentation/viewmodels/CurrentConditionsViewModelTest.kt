@@ -31,7 +31,7 @@ class CurrentConditionsViewModelTest {
     }
 
     private val mockCurrentConditionsViewStateMapper: CurrentConditionsViewStateMapper = mockk {
-        every { mapTo(any()) } returns CurrentConditionsViewState.Ready(mockk(), false)
+        every { mapTo(any(), any()) } returns CurrentConditionsViewState.Ready(mockk(), false)
     }
 
     @Test
@@ -95,6 +95,26 @@ class CurrentConditionsViewModelTest {
             mockGetCachedCurrentWeatherUseCase.executeFlow(withArg {
                 Truth.assertThat(it.maxAge).isEqualTo(0L)
             })
+        }
+    }
+
+    @Test
+    fun givenSubjectAndStateIsReadyAndIsConnectedTrue_whenReload_thenOfflineFalsePassedToMapper() = runBlockingTest {
+        val subject = givenSubjectStateIsReady()
+        subject.onConnectionUnavailable()
+        subject.reload()
+        verify {
+            mockCurrentConditionsViewStateMapper.mapTo(any(), false)
+        }
+    }
+
+    @Test
+    fun givenSubjectAndStateIsReadyAndIsConnectedFalse_whenReloadAnd_thenOfflineTruePassedToMapper() = runBlockingTest {
+        val subject = givenSubjectStateIsReady()
+        subject.onConnectionUnavailable()
+        subject.reload()
+        verify {
+            mockCurrentConditionsViewStateMapper.mapTo(any(), true)
         }
     }
 

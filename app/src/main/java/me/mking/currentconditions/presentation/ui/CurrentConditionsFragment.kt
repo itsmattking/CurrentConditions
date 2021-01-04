@@ -2,12 +2,16 @@ package me.mking.currentconditions.presentation.ui
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.Network
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -24,6 +28,19 @@ class CurrentConditionsFragment : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             checkForLocationPermissions(userHasDenied = it)
+        }
+
+    private val networkCallback: ConnectivityManager.NetworkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                viewModel.onConnectionAvailable()
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                viewModel.onConnectionUnavailable()
+            }
         }
 
     companion object {
@@ -45,11 +62,13 @@ class CurrentConditionsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.state.observe(viewLifecycleOwner) { handleState(it) }
         viewBinding.currentConditionsReload.setOnClickListener { viewModel.reload() }
+        registerNetworkCallback()
+        checkForLocationPermissions()
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkForLocationPermissions()
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterNetworkCallback()
     }
 
     private fun handleState(state: CurrentConditionsViewState) {
@@ -58,18 +77,7 @@ class CurrentConditionsFragment : Fragment() {
         viewBinding.currentConditionsErrorMessage.isVisible =
             (state is CurrentConditionsViewState.Error || state is CurrentConditionsViewState.LocationNotAvailable)
         when (state) {
-            is CurrentConditionsViewState.Ready -> {
-                viewBinding.currentConditionsCardView.apply {
-                    locationText = state.currentWeather.location
-                    conditionText = state.currentWeather.condition
-                    temperatureText = state.currentWeather.temperature
-                    windSpeedText = state.currentWeather.windSpeed
-                    windDirectionText = state.currentWeather.windDirection
-                    iconSrc = state.currentWeather.iconUrl
-                    lastUpdatedText = state.currentWeather.lastUpdated
-                }
-                viewBinding.currentConditionsProgress.isVisible = state.isRefreshing
-            }
+            is CurrentConditionsViewState.Ready -> handleReadyState(state)
             CurrentConditionsViewState.Error -> {
                 viewBinding.currentConditionsErrorMessage.text =
                     resources.getString(R.string.current_conditions_error_generic)
@@ -79,6 +87,24 @@ class CurrentConditionsFragment : Fragment() {
                     resources.getString(R.string.current_conditions_error_location)
             }
             else -> Unit
+        }
+    }
+
+    private fun handleReadyState(state: CurrentConditionsViewState.Ready) {
+        viewBinding.currentConditionsCardView.apply {
+            locationText = state.currentWeather.location
+            conditionText = state.currentWeather.condition
+            temperatureText = state.currentWeather.temperature
+            windSpeedText = state.currentWeather.windSpeed
+            windDirectionText = state.currentWeather.windDirection
+            iconSrc = state.currentWeather.iconUrl
+            lastUpdatedText = state.currentWeather.lastUpdated
+        }
+        viewBinding.currentConditionsProgress.isVisible = state.isRefreshing
+        if (state.isOffline) {
+            viewBinding.currentConditionsErrorMessage.isVisible = true
+            viewBinding.currentConditionsErrorMessage.text =
+                resources.getString(R.string.current_conditions_error_offline)
         }
     }
 
@@ -115,4 +141,19 @@ class CurrentConditionsFragment : Fragment() {
             ) { _, _ -> checkForLocationPermissions(userHasDenied = true) }
             .show()
     }
+
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    private fun registerNetworkCallback() {
+        (context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
+            registerDefaultNetworkCallback(networkCallback)
+        }
+    }
+
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    private fun unregisterNetworkCallback() {
+        (context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
+            unregisterNetworkCallback(networkCallback)
+        }
+    }
+
 }
