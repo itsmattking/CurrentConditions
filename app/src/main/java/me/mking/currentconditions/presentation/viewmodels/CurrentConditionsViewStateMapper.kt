@@ -25,7 +25,10 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
         )
     }
 
-    fun mapTo(result: DataResult<CurrentWeather>, isOffline: Boolean = false): CurrentConditionsViewState {
+    fun mapTo(
+        result: DataResult<CurrentWeather>,
+        isOffline: Boolean = false
+    ): CurrentConditionsViewState {
         return when (result) {
             is DataResult.Error -> CurrentConditionsViewState.Error
             is DataResult.Success -> CurrentConditionsViewState.Ready(
@@ -40,6 +43,14 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
     }
 
     private fun mapCurrentWeather(currentWeather: CurrentWeather): CurrentWeatherViewState {
+        return if (currentWeather == CurrentWeather.Empty) {
+            mapEmptyCurrentWeather(currentWeather)
+        } else {
+            mapExistingCurrentWeather(currentWeather)
+        }
+    }
+
+    private fun mapExistingCurrentWeather(currentWeather: CurrentWeather): CurrentWeatherViewState {
         return CurrentWeatherViewState(
             location = currentWeather.location,
             condition = currentWeather.condition.capitalize(Locale.UK),
@@ -57,6 +68,18 @@ class CurrentConditionsViewStateMapper @Inject constructor() {
                     Locale.UK
                 ).format(currentWeather.updated * 1000)
             )
+        )
+    }
+
+    private fun mapEmptyCurrentWeather(currentWeather: CurrentWeather): CurrentWeatherViewState {
+        return CurrentWeatherViewState(
+            location = "Not available",
+            condition = "Unknown",
+            temperature = "-",
+            windSpeed = "-",
+            windDirection = "-",
+            iconUrl = "",
+            lastUpdated = "Last update unknown"
         )
     }
 

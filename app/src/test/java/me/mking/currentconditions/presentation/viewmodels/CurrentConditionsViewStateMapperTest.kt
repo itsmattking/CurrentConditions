@@ -2,6 +2,7 @@ package me.mking.currentconditions.presentation.viewmodels
 
 import com.google.common.truth.Truth
 import me.mking.currentconditions.data.TestData
+import me.mking.currentconditions.domain.models.CurrentWeather
 import me.mking.currentconditions.domain.usecases.DataResult
 import org.junit.Test
 
@@ -61,6 +62,26 @@ class CurrentConditionsViewStateMapperTest {
 
         with((result as CurrentConditionsViewState.Ready)) {
             Truth.assertThat(isOffline).isTrue()
+        }
+    }
+
+    @Test
+    fun givenSubject_whenMapToWithEmptyCurrentWeather_thenResultIsReadyWithEmptyState() {
+        val result = subject.mapTo(
+            DataResult.Success(
+                CurrentWeather.Empty
+            )
+        )
+        Truth.assertThat(result).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
+
+        with((result as CurrentConditionsViewState.Ready).currentWeather) {
+            Truth.assertThat(location).isEqualTo("Not available")
+            Truth.assertThat(condition).isEqualTo("Unknown")
+            Truth.assertThat(temperature).isEqualTo("-")
+            Truth.assertThat(windSpeed).isEqualTo("-")
+            Truth.assertThat(windDirection).isEqualTo("-")
+            Truth.assertThat(iconUrl).isEqualTo("")
+            Truth.assertThat(lastUpdated).isEqualTo("Last update unknown")
         }
     }
 
