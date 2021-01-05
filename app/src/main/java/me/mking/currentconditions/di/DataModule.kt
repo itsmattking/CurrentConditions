@@ -4,10 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.mking.currentconditions.data.providers.CalendarDateTimeProvider
-import me.mking.currentconditions.data.providers.CurrentLocationProvider
-import me.mking.currentconditions.data.providers.DateTimeProvider
-import me.mking.currentconditions.data.providers.FusedCurrentLocationProvider
+import me.mking.currentconditions.data.providers.*
 
 @Module
 @InstallIn(ApplicationComponent::class)
@@ -21,4 +18,9 @@ abstract class DataModule {
     abstract fun provideDateTimeProvider(
         calendarDateTimeProvider: CalendarDateTimeProvider
     ): DateTimeProvider
+
+    @Binds
+    abstract fun provideNetworkStatusProvider(
+        androidNetworkStatusProvider: AndroidNetworkStatusProvider
+    ): NetworkStatusProvider
 }

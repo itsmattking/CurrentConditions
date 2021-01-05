@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import me.mking.currentconditions.data.providers.CurrentLocation
 import me.mking.currentconditions.data.providers.CurrentLocationProvider
+import me.mking.currentconditions.data.providers.NetworkStatusProvider
 import me.mking.currentconditions.domain.usecases.DataResult
 import me.mking.currentconditions.domain.usecases.GetCachedCurrentWeatherUseCase
 import org.junit.Test
@@ -34,12 +35,15 @@ class CurrentConditionsViewModelTest {
         every { mapTo(any(), any()) } returns CurrentConditionsViewState.Ready(mockk(), false)
     }
 
+    private val mockNetworkStatusProvider: NetworkStatusProvider = mockk {
+        every { isConnected() } returns true
+    }
+
     @Test
-    fun givenSubject_whenLoad_thenStateIsLoadingThenReady() = runBlockingTest {
+    fun givenSubject_whenLoad_thenStateIsReady() = runBlockingTest {
         val subject = givenSubject()
         subject.load()
-        verifyOrder {
-            stateObserver.onChanged(CurrentConditionsViewState.Loading)
+        verify(exactly = 1) {
             stateObserver.onChanged(withArg {
                 Truth.assertThat(it).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
             })
@@ -62,30 +66,13 @@ class CurrentConditionsViewModelTest {
         runBlockingTest {
             val subject = givenSubjectAndLocationIsNotAvailable()
             subject.load()
-            verifyOrder {
-                stateObserver.onChanged(CurrentConditionsViewState.Loading)
+            verify(exactly = 1) {
                 stateObserver.onChanged(withArg {
                     Truth.assertThat(it)
                         .isInstanceOf(CurrentConditionsViewState.LocationNotAvailable::class.java)
                 })
             }
         }
-
-    @Test
-    fun givenSubjectAndStateIsReady_whenReload_thenStateIsReadyIsRefreshing() = runBlockingTest {
-        val subject = givenSubjectStateIsReady()
-        subject.reload()
-        verifyOrder {
-            stateObserver.onChanged(withArg {
-                Truth.assertThat(it).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
-                Truth.assertThat((it as CurrentConditionsViewState.Ready).isRefreshing).isTrue()
-            })
-            stateObserver.onChanged(withArg {
-                Truth.assertThat(it).isInstanceOf(CurrentConditionsViewState.Ready::class.java)
-                Truth.assertThat((it as CurrentConditionsViewState.Ready).isRefreshing).isFalse()
-            })
-        }
-    }
 
     @Test
     fun givenSubjectAndStateIsReady_whenReload_thenMaxAgeArgumentIsZero() = runBlockingTest {
@@ -99,9 +86,8 @@ class CurrentConditionsViewModelTest {
     }
 
     @Test
-    fun givenSubjectAndStateIsReadyAndIsConnectedTrue_whenReload_thenOfflineFalsePassedToMapper() = runBlockingTest {
-        val subject = givenSubjectStateIsReady()
-        subject.onConnectionUnavailable()
+    fun givenSubjectAndNetworkStatusIsConnected_whenReload_thenOfflineFalsePassedToMapper() = runBlockingTest {
+        val subject = givenSubject()
         subject.reload()
         verify {
             mockCurrentConditionsViewStateMapper.mapTo(any(), false)
@@ -109,9 +95,8 @@ class CurrentConditionsViewModelTest {
     }
 
     @Test
-    fun givenSubjectAndStateIsReadyAndIsConnectedFalse_whenReloadAnd_thenOfflineTruePassedToMapper() = runBlockingTest {
-        val subject = givenSubjectStateIsReady()
-        subject.onConnectionUnavailable()
+    fun givenSubjectAndNetworkStatusIsNotConnected_whenReload_thenOfflineTruePassedToMapper() = runBlockingTest {
+        val subject = givenSubjectAndNetworkStatusIsNotConnected()
         subject.reload()
         verify {
             mockCurrentConditionsViewStateMapper.mapTo(any(), true)
@@ -122,7 +107,8 @@ class CurrentConditionsViewModelTest {
         val subject = CurrentConditionsViewModel(
             getCachedCurrentWeatherUseCase = mockGetCachedCurrentWeatherUseCase,
             currentLocationProvider = mockCurrentLocationProvider,
-            currentConditionsViewStateMapper = mockCurrentConditionsViewStateMapper
+            currentConditionsViewStateMapper = mockCurrentConditionsViewStateMapper,
+            networkStatusProvider = mockNetworkStatusProvider
         )
         subject.state.observeForever(stateObserver)
         return subject
@@ -133,11 +119,17 @@ class CurrentConditionsViewModelTest {
         return givenSubject()
     }
 
+    private fun givenSubjectAndNetworkStatusIsNotConnected(): CurrentConditionsViewModel {
+        coEvery { mockNetworkStatusProvider.isConnected() } returns false
+        return givenSubject()
+    }
+
     private fun givenSubjectStateIsReady(): CurrentConditionsViewModel {
         val subject = CurrentConditionsViewModel(
             getCachedCurrentWeatherUseCase = mockGetCachedCurrentWeatherUseCase,
             currentLocationProvider = mockCurrentLocationProvider,
-            currentConditionsViewStateMapper = mockCurrentConditionsViewStateMapper
+            currentConditionsViewStateMapper = mockCurrentConditionsViewStateMapper,
+            networkStatusProvider = mockNetworkStatusProvider
         )
         subject.load()
         subject.state.observeForever(stateObserver)

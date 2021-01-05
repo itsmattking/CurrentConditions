@@ -30,19 +30,6 @@ class CurrentConditionsFragment : Fragment() {
             checkForLocationPermissions(userHasDenied = it)
         }
 
-    private val networkCallback: ConnectivityManager.NetworkCallback =
-        object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                super.onAvailable(network)
-                viewModel.onConnectionAvailable()
-            }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                viewModel.onConnectionUnavailable()
-            }
-        }
-
     companion object {
         fun newInstance() = CurrentConditionsFragment()
     }
@@ -62,13 +49,7 @@ class CurrentConditionsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.state.observe(viewLifecycleOwner) { handleState(it) }
         viewBinding.currentConditionsReload.setOnClickListener { viewModel.reload() }
-        registerNetworkCallback()
         checkForLocationPermissions()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterNetworkCallback()
     }
 
     private fun handleState(state: CurrentConditionsViewState) {
@@ -140,20 +121,6 @@ class CurrentConditionsFragment : Fragment() {
                 getString(R.string.location_permission_dialog_cancel)
             ) { _, _ -> checkForLocationPermissions(userHasDenied = true) }
             .show()
-    }
-
-    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun registerNetworkCallback() {
-        (context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
-            registerDefaultNetworkCallback(networkCallback)
-        }
-    }
-
-    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    private fun unregisterNetworkCallback() {
-        (context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
-            unregisterNetworkCallback(networkCallback)
-        }
     }
 
 }
